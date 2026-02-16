@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Pines Bar & Grill | Farmington Hills Golf Club</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            color: #2d3e2d;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background-color: #fff;
+            border-bottom: 3px solid #4a6741;
+            padding: 1rem 0;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .contact-info {
+            font-size: 0.95rem;
+        }
+
+        .contact-info p {
+            margin-bottom: 0.25rem;
+            color: #4a6741;
+            font-weight: 500;
+        }
+
+        .logo-placeholder {
+            background-color: #f0f4f0;
+            border: 2px solid #4a6741;
+            padding: 1.5rem 3rem;
+            text-align: center;
+            font-weight: bold;
+            color: #4a6741;
+            font-size: 1.2rem;
+        }
+
+        .hours-box {
+            background-color: #f8faf8;
+            border: 2px solid #4a6741;
+            padding: 1rem 1.5rem;
+            min-width: 180px;
+        }
+
+        .hours-box h3 {
+            font-size: 1rem;
+            color: #4a6741;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .hours-box p {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        nav {
+            background-color: #4a6741;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav li {
+            margin: 0;
+        }
+
+        nav a {
+            display: block;
+            padding: 1rem 2rem;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            border-right: 1px solid rgba(255,255,255,0.2);
+            transition: background-color 0.2s;
+        }
+
+        nav li:last-child a {
+            border-right: none;
+        }
+
+        nav a:hover {
+            background-color: #3d5535;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            background-color: #e8ede8;
+            border-bottom: 3px solid #4a6741;
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .image-carousel {
+            flex: 1;
+            background-color: #d4ddd4;
+            border: 3px solid #4a6741;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .carousel-placeholder {
+            text-align: center;
+            color: #4a6741;
+            padding: 2rem;
+        }
+
+        .carousel-placeholder h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .carousel-controls {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .carousel-btn {
+            background-color: #4a6741;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .carousel-btn:hover {
+            background-color: #3d5535;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #2d3e2d;
+            color: #fff;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            color: #a5c49a;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .footer-section p {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .footer-section a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .footer-section a:hover {
+            color: #a5c49a;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header-top {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .hours-box {
+                width: 100%;
+            }
+
+            nav ul {
+                flex-direction: column;
+            }
+
+            nav a {
+                border-right: none;
+                border-bottom: 1px solid rgba(255,255,255,0.2);
+            }
+
+            nav li:last-child a {
+                border-bottom: none;
+            }
+
+            .hero-container {
+                flex-direction: column;
+            }
+
+            .image-carousel {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="header-top">
+                <div class="contact-info">
+                    <p>📞 (248) 476-5000</p>
+                    <p>📍 Farmington Hills Golf Club, Farmington Hills, MI</p>
+                </div>
+                
+                <div class="logo-placeholder">
+                    THE PINES LOGO
+                </div>
+                
+                <div class="hours-box">
+                    <h3>Hours</h3>
+                    <p><strong>Mon-Thu:</strong> 11am-9pm</p>
+                    <p><strong>Fri-Sat:</strong> 11am-10pm</p>
+                    <p><strong>Sunday:</strong> 10am-9pm</p>
+                </div>
+            </div>
+            
+            <nav>
+                <ul>
+                    <li><a href="#menu">Menu</a></li>
+                    <li><a href="#events">Special Events</a></li>
+                    <li><a href="#reserve">Reserve</a></li>
+                    <li><a href="#specialties">Specialties</a></li>
+                    <li><a href="#about">About Us</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-container">
+                <div class="image-carousel">
+                    <div class="carousel-placeholder">
+                        <h2>Image Carousel</h2>
+                        <p>1st image: Wide shot of golf club</p>
+                        <p>2nd image: Dining room wide shot</p>
+                        <p>3rd+ images: Food photos</p>
+                    </div>
+                    <div class="carousel-controls">
+                        <button class="carousel-btn">← Previous</button>
+                        <button class="carousel-btn">Next →</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Location</h3>
+                <p>The Pines Bar & Grill</p>
+                <p>at Farmington Hills Golf Club</p>
+                <p>Farmington Hills, MI 48331</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>Phone: <a href="tel:2484765000">(248) 476-5000</a></p>
+                <p>Email: <a href="/cdn-cgi/l/email-protection#ef86818980af9b878a9f86818a9c8987c18c8082"><span class="__cf_email__" data-cfemail="731a1d151c33071b16031a1d1600151b5d101c1e">[email&#160;protected]</span></a></p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Hours</h3>
+                <p>Monday-Thursday: 11am-9pm</p>
+                <p>Friday-Saturday: 11am-10pm</p>
+                <p>Sunday: 10am-9pm</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <p><a href="#menu">View Menu</a></p>
+                <p><a href="#reserve">Make Reservation</a></p>
+                <p><a href="#events">Special Events</a></p>
+            </div>
+        </div>
+        
+        <div class="footer-container">
+            <div class="footer-bottom">
+        
