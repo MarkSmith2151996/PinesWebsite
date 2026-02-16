@@ -6,9 +6,11 @@ header { background-color: #fff; border-bottom: 3px solid #4a6741; padding: 1rem
 .contact-info { font-size: 0.95rem; }
 .contact-info p { margin-bottom: 0.25rem; color: #4a6741; font-weight: 500; }
 .contact-info a { color: #4a6741; text-decoration: none; }
-.logo-placeholder { background: none; border: none; padding: 0.5rem 0; text-align: center; color: #4a6741; }
-.logo-placeholder .logo-name { font-size: 1.4rem; font-weight: 700; line-height: 1.2; }
-.logo-placeholder .logo-sub { font-size: 0.8rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.1em; color: #5a7a52; }
+.logo { text-align: center; padding: 0.25rem 0; }
+.logo img { max-height: 80px; width: auto; }
+.social-links { display: flex; gap: 0.75rem; align-items: center; }
+.social-links a { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: #4a6741; color: #fff; text-decoration: none; font-size: 1rem; transition: background 0.2s; }
+.social-links a:hover { background: #3d5535; }
 .hours-box { background-color: #f8faf8; border: 2px solid #4a6741; padding: 1rem 1.5rem; min-width: 180px; }
 .hours-box h3 { font-size: 1rem; color: #4a6741; margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 600; }
 .hours-box p { font-size: 0.9rem; margin-bottom: 0.25rem; }
@@ -58,10 +60,12 @@ footer { background-color: #2d3e2d; color: #fff; padding: 2rem 0; margin-top: 3r
     header { padding: 0.5rem 0; border-bottom: 2px solid #4a6741; }
     .header-top { flex-direction: column; align-items: center; gap: 0.25rem; margin-bottom: 0.4rem; text-align: center; }
 
-    /* Logo — clean text, no box */
-    .logo-placeholder { order: -1; padding: 0.25rem 0; }
-    .logo-placeholder .logo-name { font-size: 1.3rem; }
-    .logo-placeholder .logo-sub { font-size: 0.7rem; }
+    /* Logo */
+    .logo { order: -1; padding: 0.15rem 0; }
+    .logo img { max-height: 55px; }
+
+    /* Social — centered */
+    .social-links { justify-content: center; gap: 1rem; }
 
     /* Contact — each on its own line, centered */
     .contact-info { width: 100%; text-align: center; }
