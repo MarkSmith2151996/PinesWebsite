@@ -20,7 +20,10 @@
             <p><strong>Sat-Sun:</strong> 9am-8pm</p>
         </div>
     </div>
-    <nav><ul><li><a href="../index.html">Home</a></li><li><a href="menu.html">Menu</a></li><li><a href="specialties.html">Specialties</a></li><li><a href="events.html">Special Events</a></li><li><a href="reserve.html" class="active">Reserve</a></li><li><a href="about.html">About Us</a></li></ul></nav>
+    <nav>
+        <button class="hamburger" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+        <ul><li><a href="../index.html">Home</a></li><li><a href="menu.html">Menu</a></li><li><a href="specialties.html">Specialties</a></li><li><a href="events.html">Special Events</a></li><li><a href="reserve.html" class="active">Reserve</a></li><li><a href="about.html">About Us</a></li></ul>
+    </nav>
 </div></header>
 
 <main><div class="page-content">
@@ -55,5 +58,12 @@
     <div class="footer-section"><h3>Hours</h3><p>Monday-Friday: 10am-10pm</p><p>Saturday-Sunday: 9am-8pm</p><p style="margin-top:0.5rem; font-size:0.85rem;"><em>Seasonal &mdash; open with golf season</em></p></div>
     <div class="footer-section"><h3>Quick Links</h3><p><a href="menu.html">Menu</a></p><p><a href="reserve.html">Reservations</a></p><p><a href="events.html">Special Events</a></p></div>
 </div><div class="footer-grid"><div class="footer-bottom"><p>&copy; 2026 The Pines Bar &amp; Grill. All rights reserved.</p></div></div></footer>
+<script>
+document.querySelector('.hamburger').addEventListener('click', function() {
+    this.classList.toggle('open');
+    document.querySelector('nav ul').classList.toggle('show');
+    this.setAttribute('aria-expanded', this.classList.contains('open'));
+});
+</script>
 </body>
 </html>
