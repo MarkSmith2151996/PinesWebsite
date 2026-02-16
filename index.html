@@ -32,9 +32,17 @@
 </div></header>
 
 <div class="hero">
-    <div class="hero-text">
+    <div class="carousel">
+        <img src="assets/images/clubhouse.jpg" alt="Farmington Hills Golf Club" class="carousel-slide active">
+        <img src="assets/images/patio.jpg" alt="Patio overlooking the course" class="carousel-slide">
+    </div>
+    <div class="hero-overlay">
         <h2>The Pines Bar &amp; Grill</h2>
         <p>American &amp; Greek Cuisine at Farmington Hills Golf Club</p>
+    </div>
+    <div class="carousel-dots">
+        <button class="dot active" aria-label="Slide 1"></button>
+        <button class="dot" aria-label="Slide 2"></button>
     </div>
 </div>
 
@@ -64,5 +72,23 @@
     <div class="footer-section"><h3>Hours</h3><p>Monday-Friday: 10am-10pm</p><p>Saturday-Sunday: 9am-8pm</p><p style="margin-top:0.5rem; font-size:0.85rem;"><em>Seasonal &mdash; open with golf season</em></p></div>
     <div class="footer-section"><h3>Quick Links</h3><p><a href="pages/menu.html">Menu</a></p><p><a href="pages/reserve.html">Reservations</a></p><p><a href="pages/events.html">Special Events</a></p></div>
 </div><div class="footer-grid"><div class="footer-bottom"><p>&copy; 2026 The Pines Bar &amp; Grill. All rights reserved.</p></div></div></footer>
+<script>
+(function() {
+    var slides = document.querySelectorAll('.carousel-slide');
+    var dots = document.querySelectorAll('.dot');
+    var current = 0;
+    function show(i) {
+        slides[current].classList.remove('active');
+        dots[current].classList.remove('active');
+        current = i;
+        slides[current].classList.add('active');
+        dots[current].classList.add('active');
+    }
+    dots.forEach(function(dot, i) {
+        dot.addEventListener('click', function() { show(i); });
+    });
+    setInterval(function() { show((current + 1) % slides.length); }, 5000);
+})();
+</script>
 </body>
 </html>
