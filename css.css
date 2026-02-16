@@ -6,27 +6,21 @@ header { background-color: #fff; border-bottom: 3px solid #4a6741; padding: 1rem
 .contact-info { font-size: 0.95rem; }
 .contact-info p { margin-bottom: 0.25rem; color: #4a6741; font-weight: 500; }
 .contact-info a { color: #4a6741; text-decoration: none; }
-.logo-placeholder { background-color: #f0f4f0; border: 2px solid #4a6741; padding: 1.5rem 3rem; text-align: center; font-weight: bold; color: #4a6741; font-size: 1.2rem; }
+.logo-placeholder { background: none; border: none; padding: 0.5rem 0; text-align: center; color: #4a6741; }
+.logo-placeholder .logo-name { font-size: 1.4rem; font-weight: 700; line-height: 1.2; }
+.logo-placeholder .logo-sub { font-size: 0.8rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.1em; color: #5a7a52; }
 .hours-box { background-color: #f8faf8; border: 2px solid #4a6741; padding: 1rem 1.5rem; min-width: 180px; }
 .hours-box h3 { font-size: 1rem; color: #4a6741; margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 600; }
 .hours-box p { font-size: 0.9rem; margin-bottom: 0.25rem; }
-nav { background-color: #4a6741; position: relative; }
+nav { background-color: #4a6741; }
 nav ul { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; }
 nav a { display: block; padding: 1rem 1.75rem; color: #fff; text-decoration: none; font-weight: 500; border-right: 1px solid rgba(255,255,255,0.2); transition: background-color 0.2s; }
 nav li:last-child a { border-right: none; }
 nav a:hover, nav a.active { background-color: #3d5535; }
-/* Hamburger button — hidden on desktop */
-.hamburger { display: none; background: none; border: none; cursor: pointer; padding: 0.75rem 1rem; }
-.hamburger span { display: block; width: 26px; height: 3px; background: #fff; margin: 5px 0; border-radius: 2px; transition: transform 0.3s, opacity 0.3s; }
-.hamburger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-.hamburger.open span:nth-child(2) { opacity: 0; }
-.hamburger.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-.hero { background-color: #d4ddd4; border-bottom: 3px solid #4a6741; min-height: 400px; display: flex; align-items: center; justify-content: center; position: relative; }
-.hero-text { text-align: center; color: #4a6741; padding: 2rem; }
-.hero-text h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
-.carousel-controls { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); display: flex; gap: 1rem; }
-.carousel-btn { background-color: #4a6741; color: white; border: none; padding: 0.5rem 1.5rem; cursor: pointer; font-weight: 600; }
-.carousel-btn:hover { background-color: #3d5535; }
+.hero { background-color: #4a6741; display: flex; align-items: center; justify-content: center; padding: 4rem 2rem; }
+.hero-text { text-align: center; color: #fff; }
+.hero-text h2 { font-size: 2.2rem; margin-bottom: 0.5rem; font-weight: 700; }
+.hero-text p { font-size: 1.15rem; opacity: 0.9; }
 .page-content { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem; }
 .section-title { font-size: 1.8rem; color: #4a6741; margin-bottom: 0.5rem; padding-bottom: 0.75rem; border-bottom: 3px solid #4a6741; }
 .section-subtitle { font-size: 1.05rem; color: #5a7a52; margin-bottom: 2rem; }
@@ -53,39 +47,35 @@ footer { background-color: #2d3e2d; color: #fff; padding: 2rem 0; margin-top: 3r
 
 /* ===== MOBILE ===== */
 @media (max-width: 600px) {
-    /* Tight header — no wasted space */
+    /* Tight header */
     header { padding: 0.5rem 0; border-bottom: 2px solid #4a6741; }
-    .header-top { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 0; margin-bottom: 0.4rem; text-align: center; }
+    .header-top { flex-direction: column; align-items: center; gap: 0.25rem; margin-bottom: 0.4rem; text-align: center; }
 
-    /* Logo — slim bar, no box */
-    .logo-placeholder { width: 100%; border: none; background: #4a6741; color: #fff; padding: 0.4rem 1rem; font-size: 0.95rem; order: -1; }
+    /* Logo — clean text, no box */
+    .logo-placeholder { order: -1; padding: 0.25rem 0; }
+    .logo-placeholder .logo-name { font-size: 1.3rem; }
+    .logo-placeholder .logo-sub { font-size: 0.7rem; }
 
-    /* Contact — single tight line */
+    /* Contact — each on its own line, centered */
     .contact-info { width: 100%; text-align: center; }
-    .contact-info p { display: inline; font-size: 0.8rem; margin: 0; }
-    .contact-info p + p::before { content: "  \00b7  "; }
+    .contact-info p { display: block; font-size: 0.85rem; margin-bottom: 0.1rem; }
 
-    /* Hours — no border, inline style */
-    .hours-box { width: 100%; border: none; background: none; padding: 0.2rem 0; text-align: center; }
+    /* Hours — no border, inline */
+    .hours-box { width: 100%; border: none; background: none; padding: 0.15rem 0; text-align: center; }
     .hours-box h3 { display: inline; font-size: 0.8rem; margin: 0; }
     .hours-box h3::after { content: " "; }
     .hours-box p { display: inline; font-size: 0.8rem; margin: 0; }
     .hours-box p + p::before { content: "  \00b7  "; }
 
-    /* Hamburger menu */
-    .hamburger { display: block; position: absolute; top: 0; right: 0; z-index: 10; }
-    nav { display: flex; align-items: center; justify-content: center; min-height: 44px; }
-    nav ul { flex-direction: column; display: none; width: 100%; position: absolute; top: 100%; left: 0; background-color: #4a6741; z-index: 9; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-    nav ul.show { display: flex; }
-    nav a { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.15); text-align: center; padding: 0.85rem 1rem; font-size: 1rem; }
+    /* Nav — always visible, stacked */
+    nav ul { flex-direction: column; }
+    nav a { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.15); text-align: center; padding: 0.75rem 1rem; font-size: 1rem; min-height: 48px; display: flex; align-items: center; justify-content: center; }
     nav li:last-child a { border-bottom: none; }
 
-    /* Hero smaller */
-    .hero { min-height: 180px; }
-    .hero-text { padding: 1.25rem; }
-    .hero-text h2 { font-size: 1.2rem; }
-    .carousel-controls { gap: 0.5rem; }
-    .carousel-btn { padding: 0.4rem 1rem; font-size: 0.85rem; }
+    /* Hero */
+    .hero { padding: 2.5rem 1.5rem; }
+    .hero-text h2 { font-size: 1.5rem; }
+    .hero-text p { font-size: 0.95rem; }
 
     /* Content spacing */
     .container, .page-content { padding: 0 0.75rem; }
