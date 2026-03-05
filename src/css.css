@@ -136,6 +136,24 @@ footer { background-color: var(--dark); color: #fff; padding: 2rem 0; margin-top
 .footer-section a { color: #fff; text-decoration: none; }
 .footer-section a:hover { color: var(--footer-heading); }
 .footer-bottom { text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--accent, rgba(255,255,255,0.2)); font-size: 0.9rem; opacity: 0.8; }
+/* ===== Homepage scroll sections ===== */
+.home-section { padding: 3rem 0; }
+.home-section:nth-child(even) { background: var(--light-bg); }
+.home-section .section-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+.home-section .section-heading { font-size: 1.6rem; color: var(--primary); margin-bottom: 0.25rem; }
+.home-section .section-sub { color: var(--subtitle); margin-bottom: 1.5rem; font-size: 1rem; }
+.home-section .section-link { margin-top: 1.25rem; }
+.highlight-list { list-style: none; padding: 0; columns: 2; gap: 1rem; }
+.highlight-list li { padding: 0.4rem 0; font-size: 0.95rem; break-inside: avoid; }
+.highlight-list li::before { content: "\2022"; color: var(--primary); font-weight: 700; margin-right: 0.5rem; }
+.event-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
+.event-feat { background: #fff; border: 1px solid var(--border); padding: 1rem; text-align: center; }
+.event-feat strong { display: block; color: var(--primary); margin-bottom: 0.25rem; }
+.reserve-box { background: #fff; border: 2px solid var(--primary); padding: 2rem; text-align: center; max-width: 600px; margin: 0 auto; }
+.reserve-box .phone { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin: 0.75rem 0; }
+.reserve-box .phone a { color: var(--primary); text-decoration: none; }
+.reserve-details { display: flex; justify-content: center; gap: 2rem; margin-top: 1rem; font-size: 0.9rem; }
+
 /* ===== TABLET ===== */
 @media (max-width: 900px) {
     .two-col { grid-template-columns: 1fr; }
@@ -202,6 +220,14 @@ footer { background-color: var(--dark); color: #fff; padding: 2rem 0; margin-top
 
     /* Phone numbers — easy tap target */
     a[href^="tel"] { font-size: inherit; }
+
+    /* Homepage scroll sections */
+    .home-section { padding: 2rem 0; }
+    .home-section .section-inner { padding: 0 1rem; }
+    .home-section .section-heading { font-size: 1.25rem; }
+    .highlight-list { columns: 1; }
+    .event-features { grid-template-columns: 1fr; }
+    .reserve-details { flex-direction: column; gap: 0.5rem; align-items: center; }
 
     /* Image placeholders shorter */
     .img-placeholder { min-height: 140px; font-size: 0.85rem; }
