@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu | The Pines Bar & Grill</title>
+    <link rel="stylesheet" href="../css.css">
+</head>
+<body>
+<header><div class="container">
+    <div class="header-top">
+        <div class="contact-info">
+            <p>&#x1F4DE; <a href="tel:2489576733">(248) 957-6733</a></p>
+            <p>&#x1F4CD; 37777 11 Mile Ct, Farmington Hills, MI 48335</p>
+        </div>
+        <div class="logo"><img src="../assets/images/logo.png" alt="The Pines"></div>
+        <div class="hours-box">
+            <h3>Hours</h3>
+            <p><strong>Mon-Fri:</strong> 10am-10pm</p>
+            <p><strong>Sat-Sun:</strong> 9am-8pm</p>
+        </div>
+    </div>
+    <nav><button class="nav-toggle" onclick="this.closest('nav').classList.toggle('open')" aria-label="Menu"><div class="nav-toggle-icon"><span></span><span></span><span></span></div>Menu</button><ul><li><a href="../index.html">Home</a></li><li><a href="menu.html" class="active">Menu</a></li><li><a href="specialties.html">Specialties</a></li><li><a href="events.html">Special Events</a></li><li><a href="reserve.html">Reserve</a></li><li><a href="about.html">About Us</a></li></ul>
+    </nav>
+</div></header>
+
+<style>
+    .menu-tabs { display:flex; justify-content:center; gap:0; margin-bottom:0; flex-wrap:wrap; }
+    .menu-tab { padding:0.85rem 2rem; border:none; background:var(--light-bg-alt); color:var(--primary); font-weight:600; font-size:1rem; cursor:pointer; transition:all 0.2s; font-family:inherit; border-bottom:3px solid transparent; }
+    .menu-tab.active { background:#fff; color:var(--dark); border-bottom:3px solid var(--primary); }
+    .menu-tab:hover { background:var(--light-bg); }
+    .menu-section { display:none; }
+    .menu-section.active { display:block; }
+
+    /* PDF rendered inline — paper feel, fixed viewport for zoom */
+    .pdf-wrap { position:relative; background:#fffef9; border-radius:4px; overflow:auto; max-height:80vh; }
+    .pdf-wrap canvas { display:block; margin:0 auto; }
+
+    /* Card flip */
+    .flip-container { perspective:1200px; margin-bottom:0.5rem; }
+    .flip-card {
+        position:relative; width:100%; transform-style:preserve-3d;
+        transition:transform 1s cubic-bezier(0.4, 0.0, 0.2, 1), box-shadow 0.5s ease;
+        box-shadow:0 2px 8px rgba(0,0,0,0.08);
+    }
+    .flip-card:hover { box-shadow:0 8px 24px rgba(0,0,0,0.12); }
+    .flip-card.flipped { transform:rotateY(180deg); }
+    /* Midpoint lift — card rises during flip */
+    .flip-card.flipping { box-shadow:0 20px 60px rgba(0,0,0,0.25); }
+    .flip-front, .flip-back {
+        backface-visibility:hidden; -webkit-backface-visibility:hidden;
+        border-radius:4px; position:relative;
+    }
+    /* Lighting overlay — simulates light shifting as card turns */
+    .flip-front::after, .flip-back::after {
+        content:''; position:absolute; top:0; left:0; right:0; bottom:0;
+        pointer-events:none; border-radius:4px;
+        transition:opacity 1s cubic-bezier(0.4, 0.0, 0.2, 1);
+        opacity:0;
+    }
+    .flip-front::after { background:linear-gradient(105deg, rgba(255,255,255,0.3) 0%, transparent 50%, rgba(0,0,0,0.05) 100%); }
+    .flip-back::after { background:linear-gradient(-105deg, rgba(255,255,255,0.3) 0%, transparent 50%, rgba(0,0,0,0.05) 100%); }
+    .flip-card.flipping .flip-front::after,
+    .flip-card.flipping .flip-back::after { opacity:1; }
+    .flip-back { position:absolute; top:0; left:0; width:100%; transform:rotateY(180deg); }
+    .flip-label { text-align:center; font-size:0.8rem; color:#888; margin-bottom:0.5rem; letter-spacing:0.03em; transition:opacity 0.3s; }
+    .flip-btn { display:inline-flex; align-items:center; gap:0.5rem; background:var(--primary); color:#fff; border:none; padding:0.6rem 1.5rem; border-radius:24px; cursor:pointer; font-size:0.95rem; font-weight:600; font-family:inherit; transition:all 0.25s; box-shadow:0 2px 8px rgba(0,0,0,0.15); }
+    .flip-btn:hover { background:var(--primary-hover); box-shadow:0 4px 12px rgba(0,0,0,0.2); transform:scale(1.03); }
+    .flip-btn svg { transition:transform 0.3s; }
+    .flip-btn.flipped svg { transform:scaleX(-1); }
+    .flip-side-label { font-size:0.85rem; font-weight:400; opacity:0.85; }
+    /* Tap hint on mobile */
+    @media (hover:none) {
+        .flip-card::after { content:'Tap to flip'; position:absolute; bottom:12px; left:50%; transform:translateX(-50%); font-size:0.75rem; color:#999; background:rgba(255,255,255,0.85); padding:0.25rem 0.75rem; border-radius:12px; opacity:0; transition:opacity 0.5s; z-index:5; pointer-events:none; }
+        .flip-card:not(.flipped):not(.flipping)::after { animation:tapHint 3s ease 2s 1 forwards; }
+        @keyframes tapHint { 0%,80% { opacity:0.8; } 100% { opacity:0; } }
+    }
+
+    /* Subtle floating controls */
+    .pdf-controls { display:flex; align-items:center; justify-content:center; gap:1.5rem; padding:0.75rem 0; opacity:0.5; transition:opacity 0.3s; }
+    .pdf-controls:hover { opacity:1; }
+    .pdf-controls button { background:none; border:1px solid var(--border); color:var(--primary); width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:1.1rem; font-weight:700; display:inline-flex; align-items:center; justify-content:center; transition:all 0.2s; font-family:inherit; }
+    .pdf-controls button:hover { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .pdf-controls .zoom-label { font-size:0.85rem; color:#888; min-width:40px; text-align:center; }
+    .pdf-controls a { font-size:0.85rem; color:var(--primary); text-decoration:none; border:1px solid var(--border); padding:0.4rem 1rem; border-radius:20px; transition:all 0.2s; }
+    .pdf-controls a:hover { background:var(--primary); color:#fff; border-color:var(--primary); }
+
+    .view-toggle { text-align:center; margin-bottom:1.5rem; }
+    .view-toggle button { background:none; border:none; color:var(--primary); text-decoration:underline; cursor:pointer; font-size:0.95rem; font-family:inherit; }
+
+    /* === Interactive Text Menu === */
+    #textMenuView { max-width:none; margin:0 -2rem; }
+    .tm-meal-tabs { display:flex; justify-content:center; gap:0; margin-bottom:0; padding:0 2rem; }
+    .tm-meal-tab { padding:1rem 2.5rem; border:2px solid var(--primary); border-bottom:none; background:var(--light-bg); color:var(--primary); font-weight:700; font-size:1.05rem; cursor:pointer; font-family:inherit; transition:all 0.2s; border-radius:8px 8px 0 0; }
+    .tm-meal-tab.active { background:var(--primary); color:#fff; }
+    .tm-meal-tab:hover { background:var(--primary-hover); color:#fff; }
+
+    .tm-layout { display:grid; grid-template-columns:200px 1fr 320px; border-top:2px solid var(--primary); height:70vh; min-height:550px; background:#fff; }
+
+    /* Sidebar */
+    .tm-sidebar { border-right:2px solid var(--border); padding:0; overflow-y:auto; background:var(--light-bg); display:flex; flex-direction:column; }
+    .tm-cat { display:block; width:100%; padding:0.9rem 1.25rem; border:none; border-bottom:1px solid var(--light-bg-alt); background:transparent; color:var(--dark); font-size:0.95rem; font-weight:500; text-align:left; cursor:pointer; font-family:inherit; transition:all 0.15s; }
+    .tm-cat:hover { background:var(--light-bg-alt); }
+    .tm-cat.active { background:var(--primary); color:#fff; font-weight:600; }
+    .tm-cat:last-child { border-bottom:none; }
+
+    /* Items panel */
+    .tm-items { padding:1rem; overflow-y:auto; border-right:2px solid var(--border); }
+    .tm-item { display:flex; justify-content:space-between; align-items:baseline; padding:0.65rem 0.75rem; border-bottom:1px solid var(--light-bg); cursor:pointer; transition:background 0.15s; border-radius:4px; }
+    .tm-item:hover { background:var(--light-bg); }
+    .tm-item.active { background:var(--light-bg-alt); }
+    .tm-item:last-child { border-bottom:none; }
+    .tm-item-name { font-weight:600; color:var(--dark); font-size:0.95rem; }
+    .tm-item-price { font-weight:700; color:var(--primary); font-size:0.95rem; white-space:nowrap; margin-left:1rem; }
+    .tm-items-header { font-size:0.8rem; color:#888; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem; padding:0 0.75rem; }
+
+    /* Detail panel */
+    .tm-detail { padding:1.5rem; background:var(--light-bg); overflow-y:auto; display:flex; flex-direction:column; }
+    .tm-detail-img { width:100%; aspect-ratio:4/3; background:var(--light-bg-alt); border:2px dashed var(--border); display:flex; align-items:center; justify-content:center; color:#999; font-size:0.85rem; font-style:italic; margin-bottom:1.25rem; border-radius:6px; }
+    .tm-detail-name { font-size:1.3rem; font-weight:700; color:var(--dark); margin-bottom:0.25rem; }
+    .tm-detail-price { font-size:1.2rem; font-weight:700; color:var(--primary); margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border); }
+    .tm-detail-desc { font-size:0.95rem; color:#555; line-height:1.7; }
+    .tm-hint { color:#aaa; font-style:italic; padding:2rem; text-align:center; display:flex; align-items:center; justify-content:center; flex:1; }
+
+    /* === Mobile menu images === */
+    .mobile-menu { display:none; }
+    .mobile-menu-viewport {
+        overflow:auto; -webkit-overflow-scrolling:touch;
+        max-height:75vh; border:1px solid #e8ede8; border-radius:6px;
+        background:#fffef9; box-shadow:0 2px 8px rgba(0,0,0,0.08);
+    }
+    .mobile-menu-viewport img { display:block; width:700px; max-width:none; height:auto; }
+    .mobile-menu-side { text-align:center; margin-bottom:0.75rem; }
+    .mobile-menu-side .side-label { font-size:0.8rem; color:#888; margin-bottom:0.5rem; }
+    .mobile-side-btn { display:inline-flex; align-items:center; gap:0.4rem; background:var(--primary); color:#fff; border:none; padding:0.5rem 1.2rem; border-radius:20px; cursor:pointer; font-size:0.9rem; font-weight:600; font-family:inherit; box-shadow:0 2px 8px rgba(0,0,0,0.15); }
+    .mobile-side-btn:active { background:var(--primary-hover); }
+    .mobile-menu-hint { text-align:center; font-size:0.75rem; color:#999; margin-top:0.5rem; }
+    .mobile-download { display:block; text-align:center; margin-top:0.75rem; font-size:0.85rem; color:var(--primary); }
+
+    /* Mobile */
+    @media (max-width:768px) {
+        /* Hide desktop PDF viewer, show mobile images */
+        .flip-container, .pdf-controls, .flip-label { display:none !important; }
+        .mobile-menu { display:block; }
+        /* Hide flip button on mobile */
+        #flipBtn { display:none; }
+        /* Text menu mobile */
+        #textMenuView { margin:0; }
+        .tm-meal-tabs { padding:0; }
+        .tm-layout { grid-template-columns:1fr; height:auto; min-height:auto; }
+        .tm-sidebar { border-right:none; border-bottom:2px solid var(--border); flex-direction:row; overflow-x:auto; }
+        .tm-cat { border-bottom:none; border-right:1px solid var(--light-bg-alt); white-space:nowrap; padding:0.75rem 1rem; font-size:0.85rem; }
+        .tm-items { border-right:none; border-bottom:2px solid var(--border); min-height:250px; max-height:40vh; }
+        .tm-detail { min-height:250px; }
+    }
+    @media (min-width:769px) {
+        .mobile-menu { display:none !important; }
+    }
+</style>
+
+<main><div class="page-content">
+    <h1 class="section-title">Menu</h1>
+    <p class="section-subtitle">American &amp; Greek favorites, made fresh daily</p>
+
+    <div class="view-toggle">
+        <button id="viewToggleBtn" onclick="toggleView()">Switch to Text Menu</button>
+    </div>
+
+    <!-- PDF Menu View (default) -->
+    <div id="pdfMenuView">
+        <div class="menu-tabs">
+            <button class="menu-tab active" onclick="showMenu('main', this)">Dinner &amp; Lunch</button>
+            <button class="menu-tab" onclick="showMenu('breakfast', this)">Breakfast &amp; Brunch</button>
+        </div>
+
+        <div id="menu-main" class="menu-section active">
+            <!-- Desktop: PDF canvas with flip -->
+            <div class="flip-label" id="flipLabel">Viewing: Side 1 — Starters, Specialties, Seafood &amp; Pasta</div>
+            <div class="flip-container">
+                <div class="flip-card" id="flipCard">
+                    <div class="flip-front">
+                        <div class="pdf-wrap"><canvas id="dinner-canvas"></canvas></div>
+                    </div>
+                    <div class="flip-back">
+                        <div class="pdf-wrap"><canvas id="lunch-canvas"></canvas></div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align:center; padding:1rem 0;">
+                <button class="flip-btn" id="flipBtn" onclick="flipMenu()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>
+                    <span id="flipBtnText">Flip to Salads, Sandwiches &amp; Burgers</span>
+                </button>
+            </div>
+            <div class="pdf-controls">
+                <button onclick="pdfZoom('dinner',-1); pdfZoom('lunch',-1)" title="Zoom out">&minus;</button>
+                <span class="zoom-label" id="dinner-zoom">100%</span>
+                <button onclick="pdfZoom('dinner',1); pdfZoom('lunch',1)" title="Zoom in">+</button>
+                <a href="../assets/pdf/dinner-menu.pdf" download>Download PDF</a>
+            </div>
+
+            <!-- Mobile: scrollable image-based menu with side toggle -->
+            <div class="mobile-menu" id="mobileMainMenu">
+                <div class="mobile-menu-side">
+                    <div class="side-label" id="mobileSideLabel">Side 1 — Starters, Specialties, Seafood &amp; Pasta</div>
+                </div>
+                <div class="mobile-menu-viewport">
+                    <img id="mobileMainImg" src="../assets/images/menu/dinner.jpg" alt="Dinner &amp; Lunch Menu — Side 1">
+                </div>
+                <div class="mobile-menu-side" style="margin-top:0.75rem;">
+                    <button class="mobile-side-btn" id="mobileSideBtn" onclick="mobileFlip()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>
+                        <span id="mobileSideBtnText">Flip to Side 2</span>
+                    </button>
+                </div>
+                <div class="mobile-menu-hint">Scroll to browse the menu</div>
+                <a class="mobile-download" href="../assets/pdf/dinner-menu.pdf" download>Download PDF</a>
+            </div>
+        </div>
+
+        <div id="menu-breakfast" class="menu-section">
+            <!-- Desktop -->
+            <div class="pdf-wrap" id="breakfastPdfWrap"><canvas id="breakfast-canvas"></canvas></div>
+            <div class="pdf-controls">
+                <button onclick="pdfZoom('breakfast',-1)" title="Zoom out">&minus;</button>
+                <span class="zoom-label" id="breakfast-zoom">100%</span>
+                <button onclick="pdfZoom('breakfast',1)" title="Zoom in">+</button>
+                <a href="../assets/pdf/breakfast-menu.pdf" download>Download PDF</a>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile-menu">
+                <div class="mobile-menu-viewport">
+                    <img src="../assets/images/menu/breakfast.jpg" alt="Breakfast &amp; Brunch Menu">
+                </div>
+                <div class="mobile-menu-hint">Scroll to browse the menu</div>
+                <a class="mobile-download" href="../assets/pdf/breakfast-menu.pdf" download>Download PDF</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Text Menu View -->
+    <div id="textMenuView" style="display:none;">
+        <!-- Meal tabs -->
+        <div class="tm-meal-tabs">
+            <button class="tm-meal-tab active" onclick="tmShowMeal('dinner', this)">Dinner</button>
+            <button class="tm-meal-tab" onclick="tmShowMeal('lunch', this)">Lunch</button>
+            <button class="tm-meal-tab" onclick="tmShowMeal('breakfast', this)">Breakfast</button>
+        </div>
+
+        <!-- Three-panel layout -->
+        <div class="tm-layout">
+            <div class="tm-sidebar" id="tmSidebar"></div>
+            <div class="tm-items" id="tmItems">
+                <p class="tm-hint">Select a category</p>
+            </div>
+            <div class="tm-detail" id="tmDetail">
+                <p class="tm-hint">Select an item</p>
+            </div>
+        </div>
+    </div>
+
+</div></main>
+
+<script type="module">
+import * as pdfjsLib from '../assets/pdfjs/build/pdf.mjs';
+pdfjsLib.GlobalWorkerOptions.workerSrc = '../assets/pdfjs/build/pdf.worker.mjs';
+
+var state = {};
+var BASE_SCALE = 1.5;
+var menus = [
+    { key: 'dinner', src: '../assets/pdf/dinner-menu.pdf' },
+    { key: 'lunch', src: '../assets/pdf/lunch-menu.pdf' },
+    { key: 'breakfast', src: '../assets/pdf/breakfast-menu.pdf' }
+];
+
+async function renderPdf(key, src) {
+    var pdf = await pdfjsLib.getDocument(src).promise;
+    var page = await pdf.getPage(1);
+    state[key] = { page: page, scale: BASE_SCALE };
+    drawPage(key);
+}
+
+function drawPage(key) {
+    var s = state[key];
+    var viewport = s.page.getViewport({ scale: s.scale });
+    var canvas = document.getElementById(key + '-canvas');
+    var ctx = canvas.getContext('2d');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    s.page.render({ canvasContext: ctx, viewport: viewport });
+    document.getElementById(key + '-zoom').textContent = Math.round(s.scale / BASE_SCALE * 100) + '%';
+}
+
+menus.forEach(function(m) { renderPdf(m.key, m.src); });
+
+window.pdfZoom = function(key, dir) {
+    var s = state[key];
+    if (!s) return;
+    s.scale = Math.max(0.75, Math.min(5, s.scale + dir * 0.3));
+    drawPage(key);
+    /* Center scroll after zoom */
+    var canvas = document.getElementById(key + '-canvas');
+    var wrap = canvas.closest('.pdf-wrap');
+    if (wrap) {
+        wrap.scrollLeft = (wrap.scrollWidth - wrap.clientWidth) / 2;
+        wrap.scrollTop = (wrap.scrollHeight - wrap.clientHeight) / 2;
+    }
+};
+
+/* Flip animation — enhanced with mid-flip lift & lighting */
+var isFlipped = false;
+var isAnimating = false;
+window.flipMenu = function() {
+    if (isAnimating) return;
+    isAnimating = true;
+    var card = document.getElementById('flipCard');
+    var btn = document.getElementById('flipBtn');
+    var label = document.getElementById('flipLabel');
+    var btnText = document.getElementById('flipBtnText');
+
+    /* Add flipping class for shadow lift & spine */
+    card.classList.add('flipping');
+    label.style.opacity = '0';
+
+    /* Small delay so lift starts before the rotation */
+    setTimeout(function() {
+        isFlipped = !isFlipped;
+        card.classList.toggle('flipped');
+        btn.classList.toggle('flipped');
+    }, 80);
+
+    /* Remove flipping class & update labels after animation completes */
+    setTimeout(function() {
+        card.classList.remove('flipping');
+        if (isFlipped) {
+            label.innerHTML = 'Viewing: Side 2 — Salads, Sandwiches, Burgers &amp; Quesadillas';
+            var back = card.querySelector('.flip-back');
+            card.style.height = back.offsetHeight + 'px';
+        } else {
+            label.innerHTML = 'Viewing: Side 1 — Starters, Specialties, Seafood &amp; Pasta';
+            card.style.height = '';
+        }
+        btnText.innerHTML = isFlipped
+            ? 'Flip to Starters, Specialties &amp; Seafood'
+            : 'Flip to Salads, Sandwiches &amp; Burgers';
+        label.style.opacity = '1';
+        isAnimating = false;
+    }, 1100);
+};
+
+/* Set initial height after render */
+setTimeout(function() {
+    var card = document.getElementById('flipCard');
+    if (card) {
+        var front = card.querySelector('.flip-front');
+        if (front) card.style.minHeight = front.offsetHeight + 'px';
+    }
+}, 1500);
+
+/* Mobile side toggle (image-based) */
+var mobileFlipped = false;
+window.mobileFlip = function() {
+    mobileFlipped = !mobileFlipped;
+    var img = document.getElementById('mobileMainImg');
+    var label = document.getElementById('mobileSideLabel');
+    var btnText = document.getElementById('mobileSideBtnText');
+    if (mobileFlipped) {
+        img.src = '../assets/images/menu/lunch.jpg';
+        img.alt = 'Dinner & Lunch Menu — Side 2';
+        label.innerHTML = 'Side 2 — Salads, Sandwiches, Burgers &amp; Quesadillas';
+        btnText.textContent = 'Flip to Side 1';
+    } else {
+        img.src = '../assets/images/menu/dinner.jpg';
+        img.alt = 'Dinner & Lunch Menu — Side 1';
+        label.innerHTML = 'Side 1 — Starters, Specialties, Seafood &amp; Pasta';
+        btnText.textContent = 'Flip to Side 2';
+    }
+};
+
+window.showMenu = function(key, btn) {
+    document.querySelectorAll('.menu-section').forEach(function(el) { el.classList.remove('active'); });
+    document.querySelectorAll('.menu-tab').forEach(function(el) { el.classList.remove('active'); });
+    document.getElementById('menu-' + key).classList.add('active');
+    btn.classList.add('active');
+};
+
+window.toggleView = function() {
+    var pdf = document.getElementById('pdfMenuView');
+    var text = document.getElementById('textMenuView');
+    var btn = document.getElementById('viewToggleBtn');
+    if (pdf.style.display === 'none') {
+        pdf.style.display = '';
+        text.style.display = 'none';
+        btn.textContent = 'Switch to Text Menu';
+    } else {
+        pdf.style.display = 'none';
+        text.style.display = '';
+        btn.textContent = 'Switch to PDF Menu';
+        if (!window._tmInit) { window._tmInit = true; tmShowMeal('dinner', document.querySelector('.tm-meal-tab.active')); }
+    }
+};
+
+/* ========== INTERACTIVE TEXT MENU ========== */
+var menuData = {
+    dinner: {
+        "Starters": [
+            { name: "Bang Bang Shrimp", price: "14", desc: "Crispy shrimp tossed in sweet chili sauce" },
+            { name: 'Saganaki "OPA"', price: "9", desc: "Greek Kasseri cheese, flamed with brandy, grilled pita" },
+            { name: "Greek Sausage", price: "10", desc: "Pan seared pork sausage, flamed with brandy, grilled pita" },
+            { name: "Brussel Sprouts", price: "14", desc: "Fried sprouts with balsamic glaze, bacon, red peppers (GF)" },
+            { name: "Hummus & Vegetables", price: "9", desc: "Julienne vegetables" },
+            { name: "Spinach & Artichoke Dip", price: "14", desc: "Blended with three cheeses, with corn tortilla chips" },
+            { name: "Chili Cheese Nachos", price: "15/19", desc: "Smothered with cheddar cheese, lettuce, tomato, jalapenos, salsa and sour cream. Add beef or chicken 19" },
+            { name: "Chips & Salsa", price: "9", desc: "Homemade salsa, with corn tortilla chips" },
+            { name: "Fish or Shrimp Tacos", price: "12/15", desc: "Served on soft tortilla homemade salsa, cabbage, chili lime sauce. 2 pc. 12 / 3 pc. 15" },
+            { name: "Wings", price: "12/21", desc: "Choice of: Plain, BBQ, Buffalo & Honey Sesame. 6 pc. 12 / 12 pc. 21" }
+        ],
+        "Specialties": [
+            { name: "Spinach Pie", price: "21", desc: "Spinach, feta cheese, seasonings, baked in phyllo dough, rice pilaf and Greek-style green beans" },
+            { name: "Moussaka", price: "21", desc: "Layers of eggplant, potatoes and ground beef topped with our bechamel sauce, rice pilaf and Greek-style green beans" },
+            { name: "Gyro or Chicken Gyro", price: "21", desc: "A blend of seasoned beef and lamb or marinated chicken breast with tomatoes, red onions, tzatziki sauce on grilled pita bread, rice pilaf and Greek-style green beans" },
+            { name: "Broiled Chicken Kabob", price: "24", desc: "Skewered marinated chicken, tzatziki sauce, rice pilaf and Greek-style green beans with grilled pita" },
+            { name: "Honey Chicken", price: "24", desc: "Breaded breast of chicken on top of orzo mac & cheese, drizzled with honey, brussel sprouts" },
+            { name: "Sundried Tomato Chicken", price: "24", desc: "Breaded breast of chicken, sundried tomatoes, garlic and mushroom sauce, topped with goat cheese, garlic mashed potatoes and vegetable medley" },
+            { name: "Chicken Francesca", price: "24", desc: "Breaded breast of chicken, with artichoke hearts, cherry tomatoes, saut\u00e9ed in garlic, white wine and lemon, garlic mashed potatoes and vegetable medley" },
+            { name: "Pineapple Bourbon BBQ Pork Chop", price: "28", desc: "Grilled 12oz fresh cut chop, orzo mac & cheese and brussel sprouts" }
+        ],
+        "Seafood": [
+            { name: "Crab Cakes", price: "32", desc: "Grilled jumbo lump crab meat, roasted red pepper aioli, rice pilaf and vegetable medley" },
+            { name: "Honey Jack Salmon", price: "26", desc: "Grilled Atlantic salmon with a blend of Jack Daniels whiskey and honey, rice pilaf and brussel sprouts" },
+            { name: "Blackened Salmon", price: "26", desc: "Grilled Atlantic salmon blackened, garlic mashed potatoes and brussel sprouts" },
+            { name: "Whitefish", price: "26", desc: "Potato encrusted whitefish, arugula, bacon and tomato salad, garlic mashed potatoes" },
+            { name: "Lake Perch", price: "28", desc: "Lightly floured and saut\u00e9ed with white wine and lemon, rice pilaf and vegetable medley" },
+            { name: "Dailey Fish & Chips", price: "18/21", desc: "Beer battered Alaskan Cod, French fries and tartar sauce. 2 pc. 18 / 3 pc. 21" }
+        ],
+        "Pasta & Stir Fry": [
+            { name: "Carbonara", price: "22", desc: "Bacon, ham, peas, tomatoes in a garlic Parmesan cream sauce, over linguine noodles" },
+            { name: "Shrimp Pesto", price: "24", desc: "Saut\u00e9ed gulf shrimp, sundried tomatoes, spinach, mushrooms in a garlic basil pesto cream sauce over linguine noodles" },
+            { name: "Linguine Alfredo", price: "18/22/24", desc: "Classic butter garlic Parmesan cream sauce. Plain 18 / with chicken 22 / with shrimp 24" },
+            { name: "Veggie Stir Fry", price: "18/22/24", desc: "Broccoli, carrots, mushrooms, peppers, pea pods, water chestnuts, tossed in an orange teriyaki sauce, over rice pilaf. Plain 18 / with chicken 22 / with shrimp 24" }
+        ]
+    },
+    lunch: {
+        "Salads": [
+            { name: "Greek Classic", price: "14/12", desc: "House greens, cucumbers, feta cheese, kalamata olives, beets, pepperoncinis, red onions, cherry tomatoes, served with house Greek dressing (GF). Half 12" },
+            { name: "Michigan Cherry Pecan", price: "15/13", desc: "House greens, cucumber, cherry tomatoes, dried cherries, pecans, bleu cheese, served with raspberry vinaigrette dressing (GF). Half 13" },
+            { name: "Spinach", price: "15/13", desc: "Spinach and house greens, goat cheese, dried cherries, pecans, red onions, mandarin oranges, served with honey mustard vinaigrette dressing (GF). Half 13" },
+            { name: "Maurice", price: "16/14", desc: "House greens, ham, smoked turkey, cherry tomatoes, hard boiled egg, olives, pickles, Swiss cheese, served with Maurice dressing (GF). Half 14" },
+            { name: "Caesar", price: "14/12", desc: "Fresh romaine lettuce, croutons, Parmesan cheese, tossed in creamy Caesar dressing (GF). Half 12" },
+            { name: "Mediterranean", price: "15/13", desc: "Romaine lettuce, burnt onions, chickpeas, beets, feta cheese, cucumbers, cherry tomatoes, served with house Greek dressing (GF). Half 13" }
+        ],
+        "Lighter Side": [
+            { name: "Healthy Delight", price: "15", desc: "Homemade cherry chicken salad, tuna salad, grilled chicken breast, Angus burger patty or Quinoa burger patty. Served with cottage cheese, hard boiled egg and fresh fruit. (GF)" }
+        ],
+        "Burgers": [
+            { name: '"The Masters"', price: "14", desc: "1/2 lb. black Angus beef patties served on brioche bun with lettuce, tomato, pickle and homemade potato chips. Add cheese 1. Substitute French fries 2, onion rings 3, or sweet potato fries 3" },
+            { name: "Mushroom & Swiss Cheese", price: "16", desc: "1/2 lb. black Angus beef patty with saut\u00e9ed mushrooms and Swiss cheese on brioche bun" },
+            { name: '"Hole in One"', price: "17", desc: "Smoked bacon, sunny side up egg, American cheese on brioche bun" },
+            { name: "Blueberry BBQ", price: "17", desc: "Smoked bacon, fried onions, cheddar cheese, blueberry mayo, topped with BBQ sauce on brioche bun" },
+            { name: "Bonzai Burger", price: "16", desc: "Grilled pineapple, Swiss cheese, teriyaki sauce on brioche bun" },
+            { name: "Veggie Burger", price: "15", desc: "Quinoa patty on brioche bun" }
+        ],
+        "Sandwiches": [
+            { name: "Corned Beef Reuben", price: "15", desc: "Swiss cheese, sauerkraut, on grilled rye, with thousand island" },
+            { name: "French Dip", price: "16", desc: "Sliced roast beef on brioche hoagie, boursin cheese, with au jus" },
+            { name: "Modern Club", price: "15", desc: "Smoked turkey, bacon, lettuce, tomato, Swiss cheese, mayo" },
+            { name: "Crabby Patty", price: "16", desc: "Grilled crab cake on brioche bun, havarti cheese, lettuce, tomato, with roasted red pepper aioli" },
+            { name: "Fish Sandwich", price: "15", desc: "Beer battered north Alaskan Cod on brioche bun, lettuce, tomato, pickle, with tartar sauce" },
+            { name: "Tuna Melt", price: "14", desc: "Homemade tuna salad, Swiss cheese on grilled rye" },
+            { name: "Patty Melt", price: "16", desc: "1/2 lb. Angus patty, Swiss cheese, grilled onions on grilled rye" },
+            { name: "Veggie Hummus Wrap", price: "14", desc: "Hummus, lettuce, tomato, cucumber, beets, onions, feta cheese" },
+            { name: "Avocado Turkey Wrap", price: "15", desc: "Smoked turkey, avocado, lettuce, tomato, Swiss cheese, with roasted red pepper aioli" },
+            { name: "MI Cherry Pecan Chicken Wrap", price: "15", desc: "Homemade cherry chicken salad, lettuce, tomato" }
+        ],
+        "Quesadillas": [
+            { name: "Classic", price: "15", desc: "Grilled chicken, bacon, cheddar cheese, ranch, with salsa and sour cream" },
+            { name: "Fajita", price: "15", desc: "Grilled chicken, onions, peppers, cheddar cheese, with salsa and sour cream" },
+            { name: "Veggie", price: "15", desc: "Grilled peppers, summer squash, spinach, mushrooms, cheddar cheese, with salsa and sour cream" },
+            { name: "Greek", price: "15", desc: "Grilled chicken, spinach, feta cheese, with salsa and tzatziki" }
+        ],
+        "Soups": [
+            { name: "Chicken Lemon Rice", price: "", desc: "Homemade chicken lemon rice soup" },
+            { name: "Lentil (GF)", price: "", desc: "Hearty lentil soup, gluten free" },
+            { name: "Plain Chili", price: "", desc: "Homemade chili" },
+            { name: "Soup of the Day", price: "", desc: "Ask your server for today's selection" }
+        ]
+    },
+    breakfast: {
+        "Breakfast": [
+            { name: "Two Eggs with Toast & Jelly", price: "7", desc: "Two eggs any style with toast and jelly" },
+            { name: "Two Eggs with Hashbrowns & Meat", price: "10", desc: "Sausage or bacon or ham, with hashbrowns, toast and jelly" },
+            { name: "Avocado Toast", price: "14", desc: "One egg any style on toasted sourdough, avocado, cherry tomatoes, goat cheese, arugula, with fresh fruit" },
+            { name: "Homemade Yogurt", price: "9", desc: "Topped with honey, candied pecans, fresh berries" },
+            { name: "Pancakes or French Toast with Eggs", price: "12", desc: "Two pancakes or two French toast, two eggs, sausage or bacon or ham" },
+            { name: "Monte Cristo Sandwich", price: "14", desc: "French toast stuffed with bacon, ham, scrambled eggs, Swiss cheese, dusted with powdered sugar" },
+            { name: "Breakfast Burrito", price: "14", desc: "Chorizo sausage, bell peppers, onions, hashbrowns, cheddar Jack cheese rolled in tortilla, with salsa and sour cream" }
+        ],
+        "Eggs Benedict": [
+            { name: "Traditional", price: "15", desc: "Dearborn Ham, two eggs poached on English muffin, topped with Hollandaise sauce, hashbrowns" },
+            { name: "Avocado", price: "15", desc: "Avocado, spinach, tomato, two eggs poached on English muffin, topped with Hollandaise sauce, hashbrowns" }
+        ],
+        "Griddle Greats": [
+            { name: "Pancakes", price: "10", desc: "Stack of fluffy pancakes" },
+            { name: "Blueberry or Chocolate Chip Pancakes", price: "12", desc: "Two pancakes with your choice of blueberry or chocolate chip" },
+            { name: "Michigan Pancakes", price: "12", desc: "Two pancakes made with Michigan dried cherries & pecans" },
+            { name: "Cinnamon French Toast", price: "10", desc: "Classic cinnamon French toast" },
+            { name: "Pecan Caramel French Toast", price: "14", desc: "Three piece French toast topped with candied pecans, caramel sauce" }
+        ],
+        "Omelettes": [
+            { name: "Meat Lovers", price: "15", desc: "Ham, smoked bacon, sausage, cheddar cheese" },
+            { name: "Westside", price: "14", desc: "Ham, bell peppers, onions and American cheese" },
+            { name: "Veggie", price: "14", desc: "Spinach, tomatoes, onions, green peppers, mushroom, Swiss cheese" },
+            { name: "Spinach", price: "14", desc: "Fresh baby spinach, feta cheese" },
+            { name: "Greek", price: "14", desc: "Grilled onions, tomatoes, feta cheese. Add gyro meat 3" },
+            { name: "Avocado", price: "15", desc: "Bacon, avocado, roasted red peppers, Havarti cheese" }
+        ],
+        "Bowls": [
+            { name: "Meat Lovers", price: "15", desc: "Ham, bacon, sausage, cheddar cheese. Our delicious 2-egg any style, atop hashbrowns. Served with toast and jelly." },
+            { name: "Corned Beef Hash", price: "15", desc: "Shaved corned beef with grilled onions, bell peppers" },
+            { name: "Veggie", price: "14", desc: "Spinach, tomatoes, onions, green peppers, mushroom and Swiss cheese" },
+            { name: "Protein Bar", price: "15", desc: "Grilled marinated chicken breast, fresh baby spinach, mushrooms, goat cheese" },
+            { name: "Greek", price: "14", desc: "Grilled onions, tomatoes, feta cheese. Add gyro meat 3" },
+            { name: "Southwest", price: "15", desc: "Chorizo sausage, bell peppers, onions, mushrooms, cheddar cheese" }
+        ]
+    }
+};
+
+var tmCurrentMeal = 'dinner';
+var tmCurrentCat = null;
+
+window.tmShowMeal = function(meal, btn) {
+    tmCurrentMeal = meal;
+    tmCurrentCat = null;
+    document.querySelectorAll('.tm-meal-tab').forEach(function(el) { el.classList.remove('active'); });
+    btn.classList.add('active');
+
+    var sidebar = document.getElementById('tmSidebar');
+    var cats = Object.keys(menuData[meal]);
+    sidebar.innerHTML = cats.map(function(c) {
+        return '<button class="tm-cat" onclick="tmShowCat(\'' + c.replace(/'/g, "\\'") + '\', this)">' + c + '</button>';
+    }).join('');
+
+    document.getElementById('tmItems').innerHTML = '<p class="tm-hint">Select a category</p>';
+    document.getElementById('tmDetail').innerHTML = '<p class="tm-hint">Select an item</p>';
+};
+
+window.tmShowCat = function(cat, btn) {
+    tmCurrentCat = cat;
+    document.querySelectorAll('.tm-cat').forEach(function(el) { el.classList.remove('active'); });
+    btn.classList.add('active');
+
+    var items = menuData[tmCurrentMeal][cat];
+    var html = '<div class="tm-items-header">' + cat + '</div>';
+    items.forEach(function(item, i) {
+        var price = item.price ? '$' + item.price : '';
+        html += '<div class="tm-item" onclick="tmShowItem(\'' + cat.replace(/'/g, "\\'") + '\',' + i + ', this)">';
+        html += '<span class="tm-item-name">' + item.name + '</span>';
+        html += '<span class="tm-item-price">' + price + '</span>';
+        html += '</div>';
+    });
+    document.getElementById('tmItems').innerHTML = html;
+    document.getElementById('tmDetail').innerHTML = '<p class="tm-hint">Select an item</p>';
+};
+
+window.tmShowItem = function(cat, idx, el) {
+    document.querySelectorAll('.tm-item').forEach(function(e) { e.classList.remove('active'); });
+    el.classList.add('active');
+
+    var item = menuData[tmCurrentMeal][cat][idx];
+    var price = item.price ? '$' + item.price : 'Ask server';
+    var html = '<div class="tm-detail-img">Photo TBD</div>';
+    html += '<div class="tm-detail-name">' + item.name + '</div>';
+    html += '<div class="tm-detail-price">' + price + '</div>';
+    html += '<div class="tm-detail-desc">' + item.desc + '</div>';
+    document.getElementById('tmDetail').innerHTML = html;
+};
+</script>
+
+<footer><div class="footer-grid">
+    <div class="footer-section"><h3>Location</h3><p>The Pines Bar &amp; Grill</p><p>37777 11 Mile Ct</p><p>Farmington Hills, MI 48335</p></div>
+    <div class="footer-section"><h3>Contact</h3><p>Phone: <a href="tel:2489576733">(248) 957-6733</a></p></div>
+    <div class="footer-section"><h3>Hours</h3><p>Monday-Friday: 10am-10pm</p><p>Saturday-Sunday: 9am-8pm</p><p style="margin-top:0.5rem; font-size:0.85rem;"><em>Seasonal &mdash; open with golf season</em></p></div>
+    <div class="footer-section"><h3>Quick Links</h3><p><a href="menu.html">Menu</a></p><p><a href="reserve.html">Reservations</a></p><p><a href="events.html">Special Events</a></p></div>
+    <div class="footer-section"><h3>Follow Us</h3><div class="social-links"><a href="#" aria-label="Facebook">FB</a><a href="#" aria-label="Instagram">IG</a><a href="#" aria-label="Yelp">Y!</a></div></div>
+</div><div class="footer-grid"><div class="footer-bottom"><p>&copy; 2026 The Pines Bar &amp; Grill. All rights reserved.</p></div></div></footer>
+<script src="../design-panel.js"></script>
+</body>
+</html>
