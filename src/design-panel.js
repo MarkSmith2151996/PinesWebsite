@@ -17,10 +17,7 @@
     var savedAccent = localStorage.getItem('pines-accent') || 'transparent';
     var collapsed = localStorage.getItem('pines-dp-collapsed') === 'true';
 
-    // Apply saved state immediately
-    if (savedTheme === 'slate') document.documentElement.classList.add('theme-slate');
-    if (savedTheme === 'menu') document.documentElement.classList.add('theme-menu');
-    document.documentElement.style.setProperty('--accent', savedAccent);
+    // Theme/accent already applied by inline <head> script to prevent flash.
 
     // Build panel HTML
     var panel = document.createElement('div');

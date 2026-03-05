@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Pines Bar & Grill | Farmington Hills Golf Club</title>
+    <script>var t=localStorage.getItem('pines-theme'),a=localStorage.getItem('pines-accent');if(t&&t!=='green')document.documentElement.classList.add('theme-'+t);if(a)document.documentElement.style.setProperty('--accent',a);</script>
     <link rel="stylesheet" href="css.css">
 </head>
 <body>
@@ -23,9 +24,8 @@
     <nav><button class="nav-toggle" onclick="this.closest('nav').classList.toggle('open')" aria-label="Menu"><div class="nav-toggle-icon"><span></span><span></span><span></span></div>Menu</button><ul>
             <li><a href="index.html" class="active">Home</a></li>
             <li><a href="pages/menu.html">Menu</a></li>
-            <li><a href="pages/specialties.html">Specialties</a></li>
-            <li><a href="pages/events.html">Special Events</a></li>
             <li><a href="pages/reserve.html">Reserve</a></li>
+            <li><a href="pages/events.html">Special Events</a></li>
             <li><a href="pages/about.html">About Us</a></li>
         </ul>
     </nav>
