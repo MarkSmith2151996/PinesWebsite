@@ -1,0 +1,21 @@
+{
+  "date": "2026-03-06",
+  "title": "Today's Specials",
+  "specials": [
+    {
+      "name": "Grilled Lake Perch",
+      "price": "28",
+      "desc": "Lemon butter, rice pilaf, seasonal vegetables"
+    },
+    {
+      "name": "Prime Rib",
+      "price": "32",
+      "desc": "12oz slow roasted, garlic mashed potatoes, au jus"
+    },
+    {
+      "name": "Lobster Bisque",
+      "price": "9",
+      "desc": "Cup of house-made lobster bisque"
+    }
+  ]
+}

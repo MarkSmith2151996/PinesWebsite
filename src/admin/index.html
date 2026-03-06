@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Pines — Admin Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #f4f5f7; color: #1a1a1a; line-height: 1.6; }
+
+        .topbar { background: #2d3e2d; color: #fff; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .topbar h1 { font-size: 1.2rem; font-weight: 700; }
+        .topbar .status { font-size: 0.85rem; opacity: 0.7; }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+        /* Setup panel */
+        .setup-card { background: #fff; border-radius: 8px; padding: 2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
+        .setup-card h2 { font-size: 1.1rem; margin-bottom: 0.75rem; color: #2d3e2d; }
+        .setup-card p { font-size: 0.9rem; color: #555; margin-bottom: 1rem; }
+        .setup-card code { background: #f0f0f0; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.85rem; }
+
+        /* Form elements */
+        label { display: block; font-size: 0.85rem; font-weight: 600; color: #444; margin-bottom: 0.3rem; }
+        input[type="text"], input[type="password"], input[type="number"] {
+            width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #d0d0d0; border-radius: 6px;
+            font-size: 0.95rem; font-family: inherit; transition: border-color 0.2s;
+        }
+        input:focus { outline: none; border-color: #5a7a5a; }
+        .field { margin-bottom: 1rem; }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.6rem 1.25rem; border: none; border-radius: 6px;
+            font-size: 0.9rem; font-weight: 600; font-family: inherit;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-primary { background: #5a7a5a; color: #fff; }
+        .btn-primary:hover { background: #4a684a; }
+        .btn-danger { background: #c0392b; color: #fff; }
+        .btn-danger:hover { background: #a93226; }
+        .btn-secondary { background: #e8e8e8; color: #333; }
+        .btn-secondary:hover { background: #d5d5d5; }
+        .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
+
+        /* Specials list */
+        .card { background: #fff; border-radius: 8px; padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
+        .card h2 { font-size: 1.1rem; color: #2d3e2d; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+
+        .special-row { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.75rem; background: #fafafa; border: 1px solid #eee; border-radius: 6px; margin-bottom: 0.5rem; }
+        .special-row .fields { flex: 1; display: grid; grid-template-columns: 1fr 80px; gap: 0.5rem; }
+        .special-row .fields .desc-field { grid-column: 1 / -1; }
+        .special-row input { padding: 0.5rem 0.6rem; font-size: 0.9rem; }
+        .special-row .remove-btn { flex-shrink: 0; margin-top: 0.25rem; }
+
+        .empty-state { text-align: center; padding: 2rem; color: #999; font-size: 0.95rem; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 2rem; right: 2rem; padding: 0.75rem 1.25rem;
+            border-radius: 8px; font-size: 0.9rem; font-weight: 500;
+            color: #fff; opacity: 0; transform: translateY(10px);
+            transition: all 0.3s; pointer-events: none; z-index: 100;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: #27ae60; }
+        .toast.error { background: #c0392b; }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container { padding: 1rem; }
+            .special-row .fields { grid-template-columns: 1fr; }
+            .topbar { padding: 0.75rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <h1>The Pines — Dashboard</h1>
+    <span class="status" id="connectionStatus">Not connected</span>
+</div>
+
+<div class="container">
+
+    <!-- GitHub Setup -->
+    <div class="setup-card" id="setupCard">
+        <h2>Connect to GitHub</h2>
+        <p>Enter a GitHub Personal Access Token with <code>Contents: Read and write</code> permission for the PinesWebsite repo. Your token is stored locally in this browser only.</p>
+        <div class="field">
+            <label for="repoOwner">Repository Owner</label>
+            <input type="text" id="repoOwner" placeholder="MarkSmith2151996">
+        </div>
+        <div class="field">
+            <label for="repoName">Repository Name</label>
+            <input type="text" id="repoName" placeholder="PinesWebsite">
+        </div>
+        <div class="field">
+            <label for="ghToken">Personal Access Token</label>
+            <input type="password" id="ghToken" placeholder="ghp_...">
+        </div>
+        <button class="btn btn-primary" onclick="saveSetup()">Connect</button>
+        <button class="btn btn-secondary" onclick="clearSetup()" style="margin-left:0.5rem;">Clear Saved</button>
+    </div>
+
+    <!-- Specials Editor -->
+    <div class="card" id="editorCard" style="display:none;">
+        <h2>
+            Daily Specials
+            <button class="btn btn-primary btn-sm" onclick="addSpecial()">+ Add Item</button>
+        </h2>
+        <div class="field">
+            <label for="specialsTitle">Banner Title</label>
+            <input type="text" id="specialsTitle" value="Today's Specials">
+        </div>
+        <div id="specialsList"></div>
+        <div style="margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="publishSpecials()">Publish to Website</button>
+            <button class="btn btn-danger" onclick="clearAllSpecials()">Clear All Specials</button>
+        </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="card" id="previewCard" style="display:none;">
+        <h2>Live Preview</h2>
+        <div id="previewContent" style="background:#2d3e2d; color:#fff; padding:1.5rem; border-radius:6px; text-align:center;"></div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================================================================
+   Pines Admin Dashboard
+   Reads/writes data/specials.json via GitHub API.
+   Swap GitHub calls for your own API when the management system is ready.
+   =================================================================== */
+
+var CONFIG_KEY = 'pines-admin-config';
+var FILE_PATH = 'src/data/specials.json';
+var config = null;
+var currentSha = null;
+
+/* --- Setup / Auth --- */
+
+function loadConfig() {
+    try { config = JSON.parse(localStorage.getItem(CONFIG_KEY)); } catch(e) { config = null; }
+    if (config && config.token && config.owner && config.repo) {
+        document.getElementById('repoOwner').value = config.owner;
+        document.getElementById('repoName').value = config.repo;
+        document.getElementById('ghToken').value = config.token;
+        connect();
+    }
+}
+
+function saveSetup() {
+    var owner = document.getElementById('repoOwner').value.trim();
+    var repo = document.getElementById('repoName').value.trim();
+    var token = document.getElementById('ghToken').value.trim();
+    if (!owner || !repo || !token) { toast('Fill in all fields', 'error'); return; }
+    config = { owner: owner, repo: repo, token: token };
+    localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+    connect();
+}
+
+function clearSetup() {
+    localStorage.removeItem(CONFIG_KEY);
+    config = null;
+    document.getElementById('ghToken').value = '';
+    document.getElementById('connectionStatus').textContent = 'Not connected';
+    document.getElementById('editorCard').style.display = 'none';
+    document.getElementById('previewCard').style.display = 'none';
+    toast('Credentials cleared', 'success');
+}
+
+async function connect() {
+    document.getElementById('connectionStatus').textContent = 'Connecting...';
+    try {
+        var data = await ghGet(FILE_PATH);
+        currentSha = data.sha;
+        var content = JSON.parse(atob(data.content.replace(/\n/g, '')));
+        loadEditor(content);
+        document.getElementById('connectionStatus').textContent = 'Connected';
+        document.getElementById('editorCard').style.display = '';
+        document.getElementById('previewCard').style.display = '';
+        toast('Connected — specials loaded', 'success');
+    } catch(e) {
+        document.getElementById('connectionStatus').textContent = 'Connection failed';
+        toast('Failed to connect: ' + e.message, 'error');
+    }
+}
+
+/* --- GitHub API helpers --- */
+
+function ghHeaders() {
+    return {
+        'Authorization': 'Bearer ' + config.token,
+        'Accept': 'application/vnd.github.v3+json'
+    };
+}
+
+async function ghGet(path) {
+    var url = 'https://api.github.com/repos/' + config.owner + '/' + config.repo + '/contents/' + path;
+    var res = await fetch(url, { headers: ghHeaders() });
+    if (!res.ok) throw new Error('GitHub API ' + res.status);
+    return res.json();
+}
+
+async function ghPut(path, content, sha, message) {
+    var url = 'https://api.github.com/repos/' + config.owner + '/' + config.repo + '/contents/' + path;
+    var body = {
+        message: message,
+        content: btoa(unescape(encodeURIComponent(content))),
+        sha: sha
+    };
+    var res = await fetch(url, { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
+    if (!res.ok) {
+        var err = await res.json();
+        throw new Error(err.message || 'GitHub API ' + res.status);
+    }
+    return res.json();
+}
+
+/* --- Editor --- */
+
+function loadEditor(data) {
+    document.getElementById('specialsTitle').value = data.title || "Today's Specials";
+    var list = document.getElementById('specialsList');
+    list.innerHTML = '';
+    if (data.specials && data.specials.length) {
+        data.specials.forEach(function(item) { addSpecialRow(item); });
+    } else {
+        list.innerHTML = '<div class="empty-state">No specials set. Click "+ Add Item" to start.</div>';
+    }
+    updatePreview();
+}
+
+function addSpecial() {
+    var list = document.getElementById('specialsList');
+    var empty = list.querySelector('.empty-state');
+    if (empty) empty.remove();
+    addSpecialRow({ name: '', price: '', desc: '' });
+}
+
+function addSpecialRow(item) {
+    var list = document.getElementById('specialsList');
+    var row = document.createElement('div');
+    row.className = 'special-row';
+    row.innerHTML =
+        '<div class="fields">' +
+            '<div class="field" style="margin:0"><input type="text" class="s-name" placeholder="Item name" value="' + esc(item.name) + '" oninput="updatePreview()"></div>' +
+            '<div class="field" style="margin:0"><input type="text" class="s-price" placeholder="Price" value="' + esc(item.price) + '" oninput="updatePreview()"></div>' +
+            '<div class="field desc-field" style="margin:0"><input type="text" class="s-desc" placeholder="Short description" value="' + esc(item.desc) + '" oninput="updatePreview()"></div>' +
+        '</div>' +
+        '<button class="btn btn-danger btn-sm remove-btn" onclick="removeSpecial(this)">Remove</button>';
+    list.appendChild(row);
+}
+
+function removeSpecial(btn) {
+    btn.closest('.special-row').remove();
+    var list = document.getElementById('specialsList');
+    if (!list.querySelector('.special-row')) {
+        list.innerHTML = '<div class="empty-state">No specials set. Click "+ Add Item" to start.</div>';
+    }
+    updatePreview();
+}
+
+function clearAllSpecials() {
+    var list = document.getElementById('specialsList');
+    list.innerHTML = '<div class="empty-state">No specials set. Click "+ Add Item" to start.</div>';
+    updatePreview();
+}
+
+function gatherData() {
+    var title = document.getElementById('specialsTitle').value.trim() || "Today's Specials";
+    var rows = document.querySelectorAll('.special-row');
+    var specials = [];
+    rows.forEach(function(row) {
+        var name = row.querySelector('.s-name').value.trim();
+        var price = row.querySelector('.s-price').value.trim();
+        var desc = row.querySelector('.s-desc').value.trim();
+        if (name) specials.push({ name: name, price: price, desc: desc });
+    });
+    var today = new Date();
+    var date = today.getFullYear() + '-' +
+        String(today.getMonth() + 1).padStart(2, '0') + '-' +
+        String(today.getDate()).padStart(2, '0');
+    return { date: date, title: title, specials: specials };
+}
+
+/* --- Preview --- */
+
+function updatePreview() {
+    var data = gatherData();
+    var preview = document.getElementById('previewContent');
+    if (!data.specials.length) {
+        preview.innerHTML = '<p style="opacity:0.5;">No specials — banner will be hidden on the website</p>';
+        return;
+    }
+    var html = '<h3 style="font-size:1.2rem; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:1rem;">' + esc(data.title) + '</h3>';
+    html += '<div style="display:flex; justify-content:center; gap:2rem; flex-wrap:wrap;">';
+    data.specials.forEach(function(item) {
+        html += '<div style="min-width:160px;">';
+        html += '<div style="font-weight:700;">' + esc(item.name) + '</div>';
+        if (item.price) html += '<div style="color:#a5c49a; font-weight:700;">$' + esc(item.price) + '</div>';
+        if (item.desc) html += '<div style="font-size:0.85rem; opacity:0.75;">' + esc(item.desc) + '</div>';
+        html += '</div>';
+    });
+    html += '</div>';
+    preview.innerHTML = html;
+}
+
+/* --- Publish --- */
+
+async function publishSpecials() {
+    var data = gatherData();
+    var json = JSON.stringify(data, null, 2) + '\n';
+    try {
+        var result = await ghPut(FILE_PATH, json, currentSha, 'Update daily specials — ' + data.date);
+        currentSha = result.content.sha;
+        toast('Published! Website will update shortly.', 'success');
+    } catch(e) {
+        toast('Publish failed: ' + e.message, 'error');
+    }
+}
+
+/* --- Utilities --- */
+
+function esc(str) {
+    if (!str) return '';
+    var d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML.replace(/"/g, '&quot;');
+}
+
+function toast(msg, type) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast ' + type + ' show';
+    clearTimeout(el._timeout);
+    el._timeout = setTimeout(function() { el.classList.remove('show'); }, 3000);
+}
+
+/* --- Init --- */
+loadConfig();
+</script>
+</body>
+</html>

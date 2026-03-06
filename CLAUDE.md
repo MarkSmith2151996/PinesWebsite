@@ -2,7 +2,7 @@
 
 ## What This Is
 
-Static website for The Pines Bar & Grill at Farmington Hills Golf Club (Farmington Hills, MI). American and Greek cuisine, golf course views, family-run feel.
+Static website for The Pines Bar & Grill at Farmington Hills Golf Club (Farmington Hills, MI). American cuisine, golf course views, family-run feel.
 
 ## Tech Stack
 

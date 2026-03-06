@@ -1,6 +1,6 @@
 # The Pines Bar & Grill — Website
 
-Website for The Pines Bar & Grill, located at Farmington Hills Golf Club in Farmington Hills, Michigan. American and Greek cuisine with golf course views.
+Website for The Pines Bar & Grill, located at Farmington Hills Golf Club in Farmington Hills, Michigan. American cuisine with golf course views.
 
 ## Project Structure
 
@@ -47,5 +47,5 @@ the-pines-website/
 - **Name:** The Pines Bar & Grill
 - **Location:** Farmington Hills Golf Club, Farmington Hills, MI 48331
 - **Phone:** (248) 476-5000
-- **Cuisine:** American & Greek
+- **Cuisine:** American
 - **Hours:** Mon-Thu 11am-9pm, Fri-Sat 11am-10pm, Sun 10am-9pm *(placeholder — verify)*
