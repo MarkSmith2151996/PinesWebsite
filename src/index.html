@@ -143,14 +143,18 @@
 })();
 </script>
 <script>
-/* === Daily Specials — fetches from JSON, swap URL for API endpoint later === */
+/* === Daily Specials — fetches from Supabase === */
 (function() {
-    var SPECIALS_URL = 'data/specials.json';
+    var SUPABASE_URL = 'https://abinctitorpdfvtifkca.supabase.co';
+    var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiaW5jdGl0b3JwZGZ2dGlma2NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MDY0NzAsImV4cCI6MjA4ODM4MjQ3MH0.CY5UxQCRpRFVeXYo6-GXswX_itTAY1aWGHVIfjfSDGE';
 
-    fetch(SPECIALS_URL)
+    fetch(SUPABASE_URL + '/rest/v1/specials?id=eq.1&select=title,specials', {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    })
         .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (!data.specials || !data.specials.length) return;
+        .then(function(rows) {
+            var data = rows[0];
+            if (!data || !data.specials || !data.specials.length) return;
 
             var banner = document.getElementById('specials-banner');
             var title = document.getElementById('specials-title');
@@ -169,7 +173,7 @@
             container.innerHTML = html;
             banner.style.display = '';
         })
-        .catch(function() { /* no specials today — banner stays hidden */ });
+        .catch(function() { /* no specials — banner stays hidden */ });
 })();
 </script>
 <script src="design-panel.js"></script>

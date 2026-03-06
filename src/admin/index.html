@@ -14,15 +14,8 @@
 
         .container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
 
-        /* Setup panel */
-        .setup-card { background: #fff; border-radius: 8px; padding: 2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
-        .setup-card h2 { font-size: 1.1rem; margin-bottom: 0.75rem; color: #2d3e2d; }
-        .setup-card p { font-size: 0.9rem; color: #555; margin-bottom: 1rem; }
-        .setup-card code { background: #f0f0f0; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.85rem; }
-
-        /* Form elements */
         label { display: block; font-size: 0.85rem; font-weight: 600; color: #444; margin-bottom: 0.3rem; }
-        input[type="text"], input[type="password"], input[type="number"] {
+        input[type="text"] {
             width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #d0d0d0; border-radius: 6px;
             font-size: 0.95rem; font-family: inherit; transition: border-color 0.2s;
         }
@@ -39,11 +32,8 @@
         .btn-primary:hover { background: #4a684a; }
         .btn-danger { background: #c0392b; color: #fff; }
         .btn-danger:hover { background: #a93226; }
-        .btn-secondary { background: #e8e8e8; color: #333; }
-        .btn-secondary:hover { background: #d5d5d5; }
         .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
 
-        /* Specials list */
         .card { background: #fff; border-radius: 8px; padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
         .card h2 { font-size: 1.1rem; color: #2d3e2d; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
 
@@ -55,7 +45,6 @@
 
         .empty-state { text-align: center; padding: 2rem; color: #999; font-size: 0.95rem; }
 
-        /* Toast */
         .toast {
             position: fixed; bottom: 2rem; right: 2rem; padding: 0.75rem 1.25rem;
             border-radius: 8px; font-size: 0.9rem; font-weight: 500;
@@ -66,7 +55,6 @@
         .toast.success { background: #27ae60; }
         .toast.error { background: #c0392b; }
 
-        /* Responsive */
         @media (max-width: 600px) {
             .container { padding: 1rem; }
             .special-row .fields { grid-template-columns: 1fr; }
@@ -78,50 +66,27 @@
 
 <div class="topbar">
     <h1>The Pines — Dashboard</h1>
-    <span class="status" id="connectionStatus">Not connected</span>
+    <span class="status" id="connectionStatus">Loading...</span>
 </div>
 
 <div class="container">
-
-    <!-- GitHub Setup -->
-    <div class="setup-card" id="setupCard">
-        <h2>Connect to GitHub</h2>
-        <p>Enter a GitHub Personal Access Token with <code>Contents: Read and write</code> permission for the PinesWebsite repo. Your token is stored locally in this browser only.</p>
-        <div class="field">
-            <label for="repoOwner">Repository Owner</label>
-            <input type="text" id="repoOwner" placeholder="MarkSmith2151996">
-        </div>
-        <div class="field">
-            <label for="repoName">Repository Name</label>
-            <input type="text" id="repoName" placeholder="PinesWebsite">
-        </div>
-        <div class="field">
-            <label for="ghToken">Personal Access Token</label>
-            <input type="password" id="ghToken" placeholder="ghp_...">
-        </div>
-        <button class="btn btn-primary" onclick="saveSetup()">Connect</button>
-        <button class="btn btn-secondary" onclick="clearSetup()" style="margin-left:0.5rem;">Clear Saved</button>
-    </div>
-
-    <!-- Specials Editor -->
-    <div class="card" id="editorCard" style="display:none;">
+    <div class="card">
         <h2>
             Daily Specials
             <button class="btn btn-primary btn-sm" onclick="addSpecial()">+ Add Item</button>
         </h2>
         <div class="field">
             <label for="specialsTitle">Banner Title</label>
-            <input type="text" id="specialsTitle" value="Today's Specials">
+            <input type="text" id="specialsTitle" value="Today's Specials" oninput="updatePreview()">
         </div>
         <div id="specialsList"></div>
         <div style="margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
-            <button class="btn btn-primary" onclick="publishSpecials()">Publish to Website</button>
-            <button class="btn btn-danger" onclick="clearAllSpecials()">Clear All Specials</button>
+            <button class="btn btn-primary" onclick="publish()">Publish to Website</button>
+            <button class="btn btn-danger" onclick="clearAll()">Clear All Specials</button>
         </div>
     </div>
 
-    <!-- Preview -->
-    <div class="card" id="previewCard" style="display:none;">
+    <div class="card">
         <h2>Live Preview</h2>
         <div id="previewContent" style="background:#2d3e2d; color:#fff; padding:1.5rem; border-radius:6px; text-align:center;"></div>
     </div>
@@ -130,110 +95,61 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* ===================================================================
-   Pines Admin Dashboard
-   Reads/writes data/specials.json via GitHub API.
-   Swap GitHub calls for your own API when the management system is ready.
-   =================================================================== */
+var SUPABASE_URL = 'https://abinctitorpdfvtifkca.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiaW5jdGl0b3JwZGZ2dGlma2NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MDY0NzAsImV4cCI6MjA4ODM4MjQ3MH0.CY5UxQCRpRFVeXYo6-GXswX_itTAY1aWGHVIfjfSDGE';
 
-var CONFIG_KEY = 'pines-admin-config';
-var FILE_PATH = 'src/data/specials.json';
-var config = null;
-var currentSha = null;
-
-/* --- Setup / Auth --- */
-
-function loadConfig() {
-    try { config = JSON.parse(localStorage.getItem(CONFIG_KEY)); } catch(e) { config = null; }
-    if (config && config.token && config.owner && config.repo) {
-        document.getElementById('repoOwner').value = config.owner;
-        document.getElementById('repoName').value = config.repo;
-        document.getElementById('ghToken').value = config.token;
-        connect();
-    }
+function sbHeaders(write) {
+    var h = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
+    if (write) { h['Content-Type'] = 'application/json'; h['Prefer'] = 'return=minimal'; }
+    return h;
 }
 
-function saveSetup() {
-    var owner = document.getElementById('repoOwner').value.trim();
-    var repo = document.getElementById('repoName').value.trim();
-    var token = document.getElementById('ghToken').value.trim();
-    if (!owner || !repo || !token) { toast('Fill in all fields', 'error'); return; }
-    config = { owner: owner, repo: repo, token: token };
-    localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
-    connect();
-}
+/* --- Load / Save --- */
 
-function clearSetup() {
-    localStorage.removeItem(CONFIG_KEY);
-    config = null;
-    document.getElementById('ghToken').value = '';
-    document.getElementById('connectionStatus').textContent = 'Not connected';
-    document.getElementById('editorCard').style.display = 'none';
-    document.getElementById('previewCard').style.display = 'none';
-    toast('Credentials cleared', 'success');
-}
-
-async function connect() {
-    document.getElementById('connectionStatus').textContent = 'Connecting...';
+async function loadSpecials() {
     try {
-        var data = await ghGet(FILE_PATH);
-        currentSha = data.sha;
-        var content = JSON.parse(atob(data.content.replace(/\n/g, '')));
-        loadEditor(content);
+        var res = await fetch(SUPABASE_URL + '/rest/v1/specials?id=eq.1&select=title,specials', {
+            headers: sbHeaders()
+        });
+        var rows = await res.json();
+        var data = rows[0] || { title: "Today's Specials", specials: [] };
+
+        document.getElementById('specialsTitle').value = data.title || "Today's Specials";
+        var list = document.getElementById('specialsList');
+        list.innerHTML = '';
+        if (data.specials && data.specials.length) {
+            data.specials.forEach(function(item) { addSpecialRow(item); });
+        } else {
+            list.innerHTML = '<div class="empty-state">No specials set. Click "+ Add Item" to start.</div>';
+        }
+        updatePreview();
         document.getElementById('connectionStatus').textContent = 'Connected';
-        document.getElementById('editorCard').style.display = '';
-        document.getElementById('previewCard').style.display = '';
-        toast('Connected — specials loaded', 'success');
+        toast('Specials loaded', 'success');
     } catch(e) {
-        document.getElementById('connectionStatus').textContent = 'Connection failed';
-        toast('Failed to connect: ' + e.message, 'error');
+        document.getElementById('connectionStatus').textContent = 'Connection error';
+        toast('Failed to load: ' + e.message, 'error');
     }
 }
 
-/* --- GitHub API helpers --- */
-
-function ghHeaders() {
-    return {
-        'Authorization': 'Bearer ' + config.token,
-        'Accept': 'application/vnd.github.v3+json'
-    };
-}
-
-async function ghGet(path) {
-    var url = 'https://api.github.com/repos/' + config.owner + '/' + config.repo + '/contents/' + path;
-    var res = await fetch(url, { headers: ghHeaders() });
-    if (!res.ok) throw new Error('GitHub API ' + res.status);
-    return res.json();
-}
-
-async function ghPut(path, content, sha, message) {
-    var url = 'https://api.github.com/repos/' + config.owner + '/' + config.repo + '/contents/' + path;
-    var body = {
-        message: message,
-        content: btoa(unescape(encodeURIComponent(content))),
-        sha: sha
-    };
-    var res = await fetch(url, { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
-    if (!res.ok) {
-        var err = await res.json();
-        throw new Error(err.message || 'GitHub API ' + res.status);
+async function publish() {
+    var data = gatherData();
+    try {
+        var res = await fetch(SUPABASE_URL + '/rest/v1/specials?id=eq.1', {
+            method: 'PATCH',
+            headers: sbHeaders(true),
+            body: JSON.stringify({ title: data.title, specials: data.specials, updated_at: new Date().toISOString() })
+        });
+        if (!res.ok) {
+            var err = await res.json();
+            throw new Error(err.message || 'Update failed');
+        }
+        toast('Published! Changes are live on the website.', 'success');
+    } catch(e) {
+        toast('Publish failed: ' + e.message, 'error');
     }
-    return res.json();
 }
 
-/* --- Editor --- */
-
-function loadEditor(data) {
-    document.getElementById('specialsTitle').value = data.title || "Today's Specials";
-    var list = document.getElementById('specialsList');
-    list.innerHTML = '';
-    if (data.specials && data.specials.length) {
-        data.specials.forEach(function(item) { addSpecialRow(item); });
-    } else {
-        list.innerHTML = '<div class="empty-state">No specials set. Click "+ Add Item" to start.</div>';
-    }
-    updatePreview();
-}
+/* --- Editor UI --- */
 
 function addSpecial() {
     var list = document.getElementById('specialsList');
@@ -265,7 +181,7 @@ function removeSpecial(btn) {
     updatePreview();
 }
 
-function clearAllSpecials() {
+function clearAll() {
     var list = document.getElementById('specialsList');
     list.innerHTML = '<div class="empty-state">No specials set. Click "+ Add Item" to start.</div>';
     updatePreview();
@@ -281,11 +197,7 @@ function gatherData() {
         var desc = row.querySelector('.s-desc').value.trim();
         if (name) specials.push({ name: name, price: price, desc: desc });
     });
-    var today = new Date();
-    var date = today.getFullYear() + '-' +
-        String(today.getMonth() + 1).padStart(2, '0') + '-' +
-        String(today.getDate()).padStart(2, '0');
-    return { date: date, title: title, specials: specials };
+    return { title: title, specials: specials };
 }
 
 /* --- Preview --- */
@@ -310,20 +222,6 @@ function updatePreview() {
     preview.innerHTML = html;
 }
 
-/* --- Publish --- */
-
-async function publishSpecials() {
-    var data = gatherData();
-    var json = JSON.stringify(data, null, 2) + '\n';
-    try {
-        var result = await ghPut(FILE_PATH, json, currentSha, 'Update daily specials — ' + data.date);
-        currentSha = result.content.sha;
-        toast('Published! Website will update shortly.', 'success');
-    } catch(e) {
-        toast('Publish failed: ' + e.message, 'error');
-    }
-}
-
 /* --- Utilities --- */
 
 function esc(str) {
@@ -341,8 +239,7 @@ function toast(msg, type) {
     el._timeout = setTimeout(function() { el.classList.remove('show'); }, 3000);
 }
 
-/* --- Init --- */
-loadConfig();
+loadSpecials();
 </script>
 </body>
 </html>
