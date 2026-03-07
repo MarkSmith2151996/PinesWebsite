@@ -147,13 +147,12 @@ footer { background-color: var(--dark); color: #fff; padding: 2rem 0; margin-top
 .highlight-list { list-style: none; padding: 0; columns: 2; gap: 1rem; }
 .highlight-list li { padding: 0.4rem 0; font-size: 0.95rem; break-inside: avoid; }
 .highlight-list li::before { content: "\2022"; color: var(--primary); font-weight: 700; margin-right: 0.5rem; }
-.menu-preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
-.menu-preview-categories { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.menu-cat { background: #fff; border: 1px solid var(--border); padding: 1.25rem; }
-.menu-cat h3 { color: var(--primary); font-size: 1rem; margin-bottom: 0.4rem; }
+.menu-preview-categories { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+.menu-cat { background: #fff; border: 1px solid var(--border); padding: 1.25rem 1.5rem; }
+.menu-cat h3 { color: var(--primary); font-size: 1.05rem; margin-bottom: 0.5rem; }
 .menu-cat p { font-size: 0.9rem; color: var(--dark); line-height: 1.5; margin: 0; }
-.menu-preview-aside { padding: 1rem 0; }
-.menu-preview-desc { font-size: 1.05rem; line-height: 1.7; color: var(--dark); }
+.menu-preview-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 1.5rem; gap: 2rem; }
+.menu-preview-desc { font-size: 1rem; line-height: 1.6; color: var(--dark); flex: 1; }
 .event-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
 .event-feat { background: #fff; border: 1px solid var(--border); padding: 1rem; text-align: center; }
 .event-feat strong { display: block; color: var(--primary); margin-bottom: 0.25rem; }
@@ -245,8 +244,8 @@ footer { background-color: var(--dark); color: #fff; padding: 2rem 0; margin-top
     .home-section .section-inner { padding: 0 1rem; }
     .home-section .section-heading { font-size: 1.25rem; }
     .highlight-list { columns: 1; }
-    .menu-preview-grid { grid-template-columns: 1fr; }
-    .menu-preview-categories { grid-template-columns: 1fr; }
+    .menu-preview-categories { grid-template-columns: 1fr 1fr; }
+    .menu-preview-footer { flex-direction: column; text-align: center; }
     .event-features { grid-template-columns: 1fr; }
     .reserve-details { flex-direction: column; gap: 0.5rem; align-items: center; }
 
