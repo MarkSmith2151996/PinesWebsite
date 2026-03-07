@@ -13,7 +13,7 @@
         { name: 'Cream', color: '#d4c9a8' }
     ];
 
-    var savedTheme = localStorage.getItem('pines-theme') || 'green';
+    var savedTheme = localStorage.getItem('pines-theme') || 'menu';
     var savedAccent = localStorage.getItem('pines-accent') || 'transparent';
     var collapsed = localStorage.getItem('pines-dp-collapsed') === 'true';
 
@@ -64,7 +64,7 @@
     });
 
     // Theme buttons
-    var themeClasses = ['theme-slate', 'theme-menu'];
+    var themeClasses = ['theme-green', 'theme-slate'];
     panel.querySelectorAll('.dp-theme-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             var theme = btn.dataset.theme;
@@ -72,7 +72,7 @@
             btn.classList.add('active');
             // Remove all theme classes, then add the selected one
             themeClasses.forEach(function(c) { document.documentElement.classList.remove(c); });
-            if (theme !== 'green') document.documentElement.classList.add('theme-' + theme);
+            if (theme !== 'menu') document.documentElement.classList.add('theme-' + theme);
             localStorage.setItem('pines-theme', theme);
         });
     });
